@@ -103,25 +103,26 @@ public class Sms extends CordovaPlugin {
 	}
 
 	@SuppressLint("NewApi")
-	private void invokeSMSIntent(String phoneNumber, String message, String imageFile) {
+	private void invokeSMSIntent(String phoneNumber, String message, String voiceFile) {
 		Intent sendIntent;
 		if (!"".equals(phoneNumber)) {
 			sendIntent = new Intent(Intent.ACTION_SEND);
 			sendIntent.putExtra("address",phoneNumber);
 			sendIntent.putExtra("sms_body", message);
 
-			String imageDataBytes = imageFile.substring(imageFile.indexOf(",")+1);           
+// 			String imageDataBytes = imageFile.substring(imageFile.indexOf(",")+1);           
 
-			byte[] decodedString = Base64.decode(imageDataBytes, Base64.DEFAULT);
-			Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length); 
+// 			byte[] decodedString = Base64.decode(imageDataBytes, Base64.DEFAULT);
+// 			Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length); 
 
-			String saveFilePath = Environment.getExternalStorageDirectory() + "/HealthAngel";
+// 			String saveFilePath = Environment.getExternalStorageDirectory() + "/HealthAngel";
+			String saveFilePath = voiceFile
 			File dir = new File(saveFilePath);
 
 			if(!dir.exists())
 				dir.mkdirs();
 
-			File file = new File(dir, "logo.png");
+			File file = new File(dir, "security_voice.m4a");
 
 			FileOutputStream fOut = null;
 
@@ -132,7 +133,7 @@ public class Sms extends CordovaPlugin {
 				e.printStackTrace();
 			}
 
-			decodedByte.compress(Bitmap.CompressFormat.PNG, 40, fOut);
+// 			decodedByte.compress(Bitmap.CompressFormat.PNG, 40, fOut);
 
 			try {
 				fOut.flush();
@@ -148,8 +149,8 @@ public class Sms extends CordovaPlugin {
 				e.printStackTrace();
 			}
 
-			sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(saveFilePath + "/logo.png")));
-			sendIntent.setType("image/*");
+			sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(saveFilePath + "/security_voice.m4a")));
+			sendIntent.setType("*/*");
 			this.cordova.getActivity().startActivity(sendIntent);
 		}
 
