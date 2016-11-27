@@ -38,7 +38,7 @@ public class Sms extends CordovaPlugin {
 			try {
 				String phoneNumber = args.getJSONArray(0).join(";").replace("\"", "");
 				String message = args.getString(1);
-				String imageFile = args.getString(2);
+				String voiceFile = args.getString(2);
 				String method = args.getString(3);
 
 
@@ -48,7 +48,7 @@ public class Sms extends CordovaPlugin {
 				}
 
 				if (method.equalsIgnoreCase("INTENT")) {
-					invokeSMSIntent(phoneNumber, message, imageFile);
+					invokeSMSIntent(phoneNumber, message, voiceFile);
 					// always passes success back to the app
 					callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK));
 				} else {
@@ -100,28 +100,30 @@ public class Sms extends CordovaPlugin {
 	private boolean checkSupport() {
 		Activity ctx = this.cordova.getActivity();
 		return ctx.getPackageManager().hasSystemFeature(PackageManager.FEATURE_TELEPHONY);
-	}
+	} 
 
 	@SuppressLint("NewApi")
-	private void invokeSMSIntent(String phoneNumber, String message, String imageFile) {
+	private void invokeSMSIntent(String phoneNumber, String message, String voiceFile) {
 		Intent sendIntent;
 		if (!"".equals(phoneNumber)) {
 			sendIntent = new Intent(Intent.ACTION_SEND);
 			sendIntent.putExtra("address",phoneNumber);
 			sendIntent.putExtra("sms_body", message);
 
-			String imageDataBytes = imageFile.substring(imageFile.indexOf(",")+1);           
+// 			String 
+// 			DataBytes = 
+// 			File.substring(imageFile.indexOf(",")+1);           
 
-			byte[] decodedString = Base64.decode(imageDataBytes, Base64.DEFAULT);
-			Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length); 
+// 			byte[] decodedString = Base64.decode(imageDataBytes, Base64.DEFAULT);
+// 			Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length); 
 
-			String saveFilePath = Environment.getExternalStorageDirectory() + "/HealthAngel";
+			String saveFilePath = voiceFile
 			File dir = new File(saveFilePath);
 
 			if(!dir.exists())
 				dir.mkdirs();
 
-			File file = new File(dir, "logo.png");
+			File file = new File(dir, "security_voice.m4a");
 
 			FileOutputStream fOut = null;
 
@@ -132,7 +134,7 @@ public class Sms extends CordovaPlugin {
 				e.printStackTrace();
 			}
 
-			decodedByte.compress(Bitmap.CompressFormat.PNG, 40, fOut);
+// 			decodedByte.compress(Bitmap.CompressFormat.PNG, 40, fOut);
 
 			try {
 				fOut.flush();
@@ -148,8 +150,8 @@ public class Sms extends CordovaPlugin {
 				e.printStackTrace();
 			}
 
-			sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(saveFilePath + "/logo.png")));
-			sendIntent.setType("image/*");
+			sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(saveFilePath + "/secure_voice.m4a")));
+			sendIntent.setType("*/*");
 			this.cordova.getActivity().startActivity(sendIntent);
 		}
 
